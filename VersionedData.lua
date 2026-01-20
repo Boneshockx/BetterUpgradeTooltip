@@ -38,6 +38,42 @@ local VersionedData = {
         },
     },
 
+    [120000] = {
+        CRESTS = {
+            [0] = { shortName = "Valorstones", color = HEIRLOOM_BLUE_COLOR },
+            [1] = { shortName = "Weathered", color = UNCOMMON_GREEN_COLOR, achieve = 41886 },
+            [2] = { shortName = "Carved", color = RARE_BLUE_COLOR, achieve = 41887 },
+            [3] = { shortName = "Runed", color = ITEM_EPIC_COLOR, achieve = 41888 },
+            [4] = { shortName = "Gilded", color = ITEM_LEGENDARY_COLOR, achieve = 41892 },
+        },
+        UPGRADE_TIERS = {
+            {
+                name="Explorer", minIlvl=98, maxIlvl=105, maxUpgrade=8, color=ITEM_POOR_COLOR,
+                crestLevels={ [1]=0, [4]=0, [8]=nil }
+            },
+            {
+                name="Adventurer", minIlvl=102, maxIlvl=118, maxUpgrade=8, color=WHITE_FONT_COLOR,
+                crestLevels={ [1]=0, [4]=1, [8]=nil }
+            },
+            {
+                name="Veteran", minIlvl=108, maxIlvl=131, maxUpgrade=8, color=UNCOMMON_GREEN_COLOR,
+                crestLevels={ [1]=1, [4]=2, [8]=nil }
+            },
+            {
+                name="Champion", minIlvl=121, maxIlvl=144, maxUpgrade=8, color=RARE_BLUE_COLOR,
+                crestLevels={ [1]=2, [4]=3, [8]=nil }
+            },
+            {
+                name="Hero", minIlvl=134, maxIlvl=157, maxUpgrade=8, color=ITEM_EPIC_COLOR,
+                crestLevels={ [1]=3, [4]=4, [8]=nil }
+            },
+            {
+                name="Myth", minIlvl=147, maxIlvl=170, maxUpgrade=8, color=ITEM_LEGENDARY_COLOR,
+                crestLevels={ [1]=4, [8]=nil }
+            },
+        },
+    },
+
     [110200] = {
         CRESTS = {
             [0] = { shortName = "Valorstones", color = HEIRLOOM_BLUE_COLOR },

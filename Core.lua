@@ -142,6 +142,8 @@ end
 -- Tooltip processing
 ------------------------------------------------------------
 local function ProcessTooltip(tooltip)
+    if InCombatLockdown() then return end
+
     local _, itemLink = TooltipUtil.GetDisplayedItem(tooltip)
     if not itemLink then return end
 
@@ -158,7 +160,7 @@ local function ProcessTooltip(tooltip)
         local left = _G[tooltip:GetName().."TextLeft"..i]
         local text = left and left:GetText()
 
-        if text and not issecretvalue(text) and string.find(text, upgradePattern) then
+        if text and string.find(text, upgradePattern) then
             local tier, current, total = string.match(text, tierPattern)
 
             local tierData = GetUpgradeTierData(itemLevel, tonumber(current), tonumber(total))

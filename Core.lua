@@ -149,6 +149,7 @@ local function ProcessTooltip(tooltip)
     if item:IsItemEmpty() then return end
 
     local itemLevel = item:GetCurrentItemLevel()
+    local itemHighWatermark = C_ItemUpgrade.GetHighWatermarkForItem(itemLink)
 
     for i = 1, tooltip:NumLines() do
         local left = _G[tooltip:GetName().."TextLeft"..i]
@@ -184,8 +185,13 @@ local function ProcessTooltip(tooltip)
                 if right then
                     local crest = tierData.crest
                     local achieved = crest.achieve and select(13, GetAchievementInfo(crest.achieve))
-                    right:SetText("|A:2329:20:20:1:-1|a" ..
-                        (not achieved and crest.color:WrapTextInColorCode(crest.shortName) or ""))
+                    local crestText
+                    if itemLevel < itemHighWatermark then
+                        crestText = CRESTS[0].color:WrapTextInColorCode("|TInterface\\MoneyFrame\\UI-GoldIcon:12:12|t Gold")
+                    else
+                        crestText = not achieved and crest.color:WrapTextInColorCode(crest.shortName) or CRESTS[0].color:WrapTextInColorCode(crest.shortName)
+                    end
+                    right:SetText("|A:2329:20:20:1:-1|a" .. crestText)
                     right:Show()
                 end
             end

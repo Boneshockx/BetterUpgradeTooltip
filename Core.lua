@@ -151,13 +151,15 @@ local function ProcessTooltip(tooltip)
     local itemLevel = item:GetCurrentItemLevel()
     local itemHighWatermark = C_ItemUpgrade.GetHighWatermarkForItem(itemLink)
 
+    local upgradePattern = ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s %%d/%%d", "(%%D+ %%d+/%%d+)")
+    local tierPattern = ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s %%d/%%d", "(%%D+) (%%d+)/(%%d+)")
+
     for i = 1, tooltip:NumLines() do
         local left = _G[tooltip:GetName().."TextLeft"..i]
         local text = left and left:GetText()
 
-        if text and text:match(ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s %%d/%%d", "(%%D+ %%d+/%%d+)")) then
-            local tier, current, total =
-                text:match(ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s %%d/%%d", "(%%D+) (%%d+)/(%%d+)"))
+        if text and not issecretvalue(text) and string.find(text, upgradePattern) then
+            local tier, current, total = string.match(text, tierPattern)
 
             local tierData = GetUpgradeTierData(itemLevel, tonumber(current), tonumber(total))
             if not tierData then return end

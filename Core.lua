@@ -141,7 +141,7 @@ end
 ------------------------------------------------------------
 -- Tooltip processing
 ------------------------------------------------------------
-local function ProcessTooltip(tooltip)
+local function ProcessTooltip(tooltip, data)
     if InCombatLockdown() then return end
 
     local _, itemLink = TooltipUtil.GetDisplayedItem(tooltip)
@@ -153,52 +153,70 @@ local function ProcessTooltip(tooltip)
     local itemLevel = item:GetCurrentItemLevel()
     local itemHighWatermark = C_ItemUpgrade.GetHighWatermarkForItem(itemLink)
 
-    local upgradePattern = ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s %%d/%%d", "(%%D+ %%d+/%%d+)")
-    local tierPattern = ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%s %%d/%%d", "(%%D+) (%%d+)/(%%d+)")
+    -- Use data.lines (provided by TooltipDataProcessor) — these strings are
+    -- untainted, unlike GetText() which returns tainted values.
 
-    for i = 1, tooltip:NumLines() do
-        local left = _G[tooltip:GetName().."TextLeft"..i]
-        local text = left and left:GetText()
+    if not data or not data.lines then return end
 
-        if text and string.find(text, upgradePattern) then
-            local tier, current, total = string.match(text, tierPattern)
+    local current, total, upgradeLine
 
-            local tierData = GetUpgradeTierData(itemLevel, tonumber(current), tonumber(total))
-            if not tierData then return end
+    for i, line in ipairs(data.lines) do
+        local leftText = line.leftText
+        if type(leftText) == "string" then
+            local cur, tot = leftText:match("Upgrade Level: %D+ (%d+)/(%d+)")
 
-            local rangeColor = ""
-            local tierColor = ""
+            if cur then
+                current     = tonumber(cur)
+                total       = tonumber(tot)
+                upgradeLine = i
+                break
+            end
+        end
+    end
 
-            if BetterUpgradeTooltipDB.colorRange then
-                rangeColor = CreateColor(unpack(BetterUpgradeTooltipDB.ilvlRangeColor))
-                    :GenerateHexColorMarkup()
+    if not current or not total or not upgradeLine then return end
+
+    local tierData = GetUpgradeTierData(itemLevel, current, total)
+
+    if not tierData then return end
+
+    local left = _G[tooltip:GetName().."TextLeft"..upgradeLine]
+
+    if not left then return end
+
+    local rangeColor = ""
+    local tierColor  = ""
+
+    if BetterUpgradeTooltipDB.colorRange then
+        rangeColor = CreateColor(unpack(BetterUpgradeTooltipDB.ilvlRangeColor)):GenerateHexColorMarkup()
+    end
+
+    if BetterUpgradeTooltipDB.colorRank then
+        tierColor = tierData.color:GenerateHexColorMarkup()
+    end
+
+    left:SetText(string.format(
+        "%s%d/%d %s|r %s(%d-%d)|r",
+        tierColor, current, total, tierData.name,
+        rangeColor, tierData.minIlvl, tierData.maxIlvl
+    ))
+
+    if tierData.crest and BetterUpgradeTooltipDB.showUpgradeCurrency then
+        local right = _G[tooltip:GetName().."TextRight"..upgradeLine]
+
+        if right then
+            local crest = tierData.crest
+            local achieved = crest.achieve and select(13, GetAchievementInfo(crest.achieve))
+            local crestText
+
+            if itemLevel < itemHighWatermark then
+                crestText = CRESTS[0].color:WrapTextInColorCode("|TInterface\\MoneyFrame\\UI-GoldIcon:12:12|t Gold")
+            else
+                crestText = not achieved and crest.color:WrapTextInColorCode(crest.shortName) or CRESTS[0].color:WrapTextInColorCode(crest.shortName)
             end
 
-            if BetterUpgradeTooltipDB.colorRank then
-                tierColor = tierData.color:GenerateHexColorMarkup()
-            end
-
-            left:SetText(string.format(
-                "%s%d/%d %s|r %s(%d-%d)|r",
-                tierColor, current, total, tier,
-                rangeColor, tierData.minIlvl, tierData.maxIlvl
-            ))
-
-            if tierData.crest and BetterUpgradeTooltipDB.showUpgradeCurrency then
-                local right = _G[tooltip:GetName().."TextRight"..i]
-                if right then
-                    local crest = tierData.crest
-                    local achieved = crest.achieve and select(13, GetAchievementInfo(crest.achieve))
-                    local crestText
-                    if itemLevel < itemHighWatermark then
-                        crestText = CRESTS[0].color:WrapTextInColorCode("|TInterface\\MoneyFrame\\UI-GoldIcon:12:12|t Gold")
-                    else
-                        crestText = not achieved and crest.color:WrapTextInColorCode(crest.shortName) or CRESTS[0].color:WrapTextInColorCode(crest.shortName)
-                    end
-                    right:SetText("|A:2329:20:20:1:-1|a" .. crestText)
-                    right:Show()
-                end
-            end
+            right:SetText("|A:2329:20:20:1:-1|a" .. crestText)
+            right:Show()
         end
     end
 end
@@ -231,4 +249,3 @@ frame:HookScript("OnEvent", function(_, event, name)
         end
     end
 end)
-

@@ -2,6 +2,39 @@ local ADDON_NAME = ...
 local Private = select(2, ...)
 
 local VersionedData = {
+    [120100] = {
+        CRESTS = {
+            [0] = { shortName = "Gold", color = GOLD_FONT_COLOR },
+            [1] = { shortName = "Adventurer", color = WHITE_FONT_COLOR, achieve = 62410 },
+            [2] = { shortName = "Veteran", color = UNCOMMON_GREEN_COLOR, achieve = 62411 },
+            [3] = { shortName = "Champion", color = RARE_BLUE_COLOR, achieve = 62412 },
+            [4] = { shortName = "Hero", color = ITEM_EPIC_COLOR, achieve = 62414 },
+            [5] = { shortName = "Myth", color = ITEM_LEGENDARY_COLOR, achieve = 62416 },
+        },
+        UPGRADE_TIERS = {
+            {
+                name = "Adventurer", minIlvl = 266, maxIlvl = 282, maxUpgrade = 6, color = WHITE_FONT_COLOR,
+                crestLevels = { [1] = 1, [6] = nil }
+            },
+            {
+                name = "Veteran", minIlvl = 279, maxIlvl = 295, maxUpgrade = 6, color = UNCOMMON_GREEN_COLOR,
+                crestLevels = { [1] = 2, [6] = nil }
+            },
+            {
+                name = "Champion", minIlvl = 292, maxIlvl = 308, maxUpgrade = 6, color = RARE_BLUE_COLOR,
+                crestLevels = { [1] = 3, [6] = nil }
+            },
+            {
+                name = "Hero", minIlvl = 305, maxIlvl = 321, maxUpgrade = 6, color = ITEM_EPIC_COLOR,
+                crestLevels = { [1] = 4, [6] = nil }
+            },
+            {
+                name = "Myth", minIlvl = 318, maxIlvl = 344, maxUpgrade = 6, color = ITEM_LEGENDARY_COLOR,
+                crestLevels = { [1] = 5, [6] = nil }
+            },
+        },
+    },
+
     [120001] = {
         CRESTS = {
             [0] = { shortName = "Gold", color = GOLD_FONT_COLOR },
